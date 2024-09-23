@@ -56,7 +56,8 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/completions`,
+        // `http://localhost:8000/api/completions`,
+        `https://chatgpt-clone-eu3o.onrender.com/api/completions`,
         options
       );
 

@@ -53,12 +53,7 @@ const Chat = ({
       </div>
       <div className="main-bottom">
         {errorText && <p className="errorText">{errorText}</p>}
-        {errorText && (
-          <p id="errorTextHint">
-            *You can clone the repository and use your paid OpenAI API key to
-            make this work.
-          </p>
-        )}
+        {errorText && <p id="errorTextHint">Backend is not working Properly</p>}
         <form className="form-container" onSubmit={submitHandler}>
           <input
             type="text"
