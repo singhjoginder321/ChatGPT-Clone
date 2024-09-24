@@ -18,6 +18,7 @@ function App() {
   const [isResponseLoading, setIsResponseLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
   const [isShowSidebar, setIsShowSidebar] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Loading state for bot response
   const scrollToLastItem = useRef(null);
 
   const createNewChat = () => {
@@ -40,8 +41,16 @@ function App() {
     e.preventDefault();
     if (!text) return;
 
+    // Immediately show the user message and set loading state
+    setIsLoading(true);
     setIsResponseLoading(true);
     setErrorText("");
+
+    const payload = {
+      title: currentTitle || "New Chat",
+      role: "user",
+      content: text,
+    };
 
     const options = {
       method: "POST",
@@ -49,15 +58,12 @@ function App() {
         "Content-Type": "application/json",
         Authorization: import.meta.env.VITE_AUTH_TOKEN,
       },
-      body: JSON.stringify({
-        message: text,
-      }),
+      body: JSON.stringify(payload),
     };
 
     try {
       const response = await fetch(
-        // `http://localhost:8000/api/completions`,
-        `https://chatgpt-clone-eu3o.onrender.com/api/completions`,
+        `http://localhost:8000/api/completions`,
         options
       );
 
@@ -72,7 +78,7 @@ function App() {
         setText("");
       } else {
         setErrorText("");
-        setMessage(data.choices[0].message);
+        setMessage(data.choices[0].message); // Assuming this gets the assistant's response
         setTimeout(() => {
           scrollToLastItem.current?.lastElementChild?.scrollIntoView({
             behavior: "smooth",
@@ -80,6 +86,7 @@ function App() {
         }, 1);
         setTimeout(() => {
           setText("");
+          setIsLoading(false); // Hide loading after response
         }, 2);
       }
     } catch (e) {
@@ -167,6 +174,7 @@ function App() {
         submitHandler={submitHandler}
         errorText={errorText}
         scrollToLastItem={scrollToLastItem}
+        isLoading={isLoading} // Pass loading state to Chat
       />
       {isShowSidebar ? (
         <MdOutlineArrowRight

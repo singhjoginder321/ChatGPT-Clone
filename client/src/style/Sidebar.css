@@ -1,0 +1,134 @@
+/* Sidebar.css */
+
+.sidebar {
+  width: 16rem;
+  padding: 1rem;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  overflow: auto;
+  transition: all 0.3s ease;
+}
+
+.sidebar.open {
+  width: 0;
+  padding: 0;
+  opacity: 0;
+  box-shadow: 0px 0px 14px rgba(0, 0, 0, 0.1);
+  filter: blur(14px);
+}
+
+.sidebar-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.3rem;
+  border: 0.05rem solid rgba(0, 0, 0, 0.1);
+  background-color: #f5e1f0;
+  cursor: pointer;
+}
+
+.sidebar-header:hover {
+  background-color: #f2c8e1;
+}
+
+.sidebar-history {
+  width: 100%;
+  height: 100vh;
+  overflow: auto;
+}
+
+.sidebar-history p {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  padding: 0.4rem;
+  color: #4a4a4a;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.sidebar-history ul {
+  list-style: none; /* Ensure no default list styling */
+  padding: 0;
+  margin: 0;
+}
+
+.chat-item {
+  display: flex;
+  justify-content: space-between; /* Space between chat title and menu button */
+  align-items: center; /* Center items vertically */
+  overflow: hidden; /* Prevent overflow */
+  padding: 0.5rem;
+  background-color: #f5f0ff;
+  margin-bottom: 0.5rem; /* Space between chat items */
+  border-radius: 0.3rem;
+}
+
+.chat-item span {
+  flex: 1; /* Allow title to take available space */
+  overflow: hidden; /* Prevent overflow */
+  text-overflow: ellipsis; /* Add ellipsis for overflow text */
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.menu-button {
+  background: transparent; /* Transparent background */
+  border: none; /* No border */
+  cursor: pointer; /* Pointer on hover */
+  min-width: 30px; /* Set minimum width for button */
+}
+
+.sidebar-info {
+  width: 100%;
+  padding-top: 1rem;
+  border-top: 0.05rem solid rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-info-upgrade,
+.sidebar-info-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.sidebar li:hover,
+.sidebar-info-upgrade:hover,
+.sidebar-info-user:hover {
+  background-color: #f0f0f0;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+
+.popup-menu {
+  position: absolute; /* Position it relative to the sidebar */
+  right: 2rem; /* Adjust as needed */
+  background-color: white; /* White background for popup */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+  border-radius: 0.3rem; /* Rounded corners */
+  z-index: 10; /* Ensure it appears above other elements */
+  padding: 0.5rem;
+  width: 8rem;
+}
+
+.popup-menu ul {
+  list-style: none; /* Remove default list styles */
+  padding: 0; /* Remove padding */
+  margin: 0; /* Remove margin */
+}
+
+.popup-menu li {
+  padding: 0.5rem 1rem; /* Padding for items */
+  cursor: pointer; /* Pointer on hover */
+}
+
+.popup-menu li:hover {
+  background-color: #f0f0f0; /* Highlight on hover */
+}

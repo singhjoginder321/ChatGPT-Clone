@@ -1,0 +1,71 @@
+.confirmation-card {
+  position: fixed;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 100; /* Ensure it's above other elements */
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px; /* Optional: rounded corners */
+  text-align: center; /* Center the text */
+  max-width: 300px; /* Limit the width for better text wrapping */
+  width: 100%; /* Make it responsive */
+}
+
+.confirmation-card h2 {
+  margin: 10px 0;
+}
+
+.confirmation-card p {
+  margin: 10px 0 20px; /* Space above and below the paragraph */
+  word-wrap: break-word; /* Allow words to wrap */
+  line-height: 1.5; /* Improve readability */
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between; /* Align buttons in row */
+}
+
+.clear-button {
+  background-color: red; /* Red background */
+  color: white; /* White text */
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: medium;
+  transition: background-color 0.3s;
+}
+
+.cancel-button {
+  background-color: #e5d7eb; /* Light background */
+  color: black; /* Black text */
+  border: none;
+  font-size: medium;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.clear-button:hover {
+  background-color: darkred; /* Darker red on hover */
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0; /* Darker light gray on hover */
+}
+
+/* Translucent background overlay */
+.confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(23, 20, 20, 0.5); /* Dark overlay */
+  z-index: 99; /* Below the card but above other content */
+}

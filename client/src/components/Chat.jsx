@@ -1,6 +1,8 @@
 // Chat.jsx
+import { useState } from "react";
 import { BiSend, BiSolidUserCircle } from "react-icons/bi";
 import { FaRobot } from "react-icons/fa";
+import "../style/Chat.css";
 
 const Chat = ({
   currentChat,
@@ -11,16 +13,22 @@ const Chat = ({
   errorText,
   scrollToLastItem,
 }) => {
+  const [isLoading, setIsLoading] = useState(false); // New state for loading
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!text) return;
+
+    // Immediately show the user message
+    setIsLoading(true);
+    submitHandler(e);
+    // Call the submit handler to make the API request
+  };
+
   return (
     <section className="main">
       {!currentChat.length && (
         <div className="empty-chat-container">
-          {/* <img
-            src="images/chatgpt-logo.svg"
-            width={45}
-            height={45}
-            alt="ChatGPT"
-          /> */}
           <FaRobot size={45} />
           <h1>Chat GPT Clone</h1>
           <h3>How can I help you today?</h3>
@@ -31,21 +39,36 @@ const Chat = ({
         <ul>
           {currentChat.map((chatMsg, idx) => {
             const isUser = chatMsg.role === "user";
+            const isBotLoading = isLoading && chatMsg.role === "bot"; // Check if the bot is loading
 
             return (
-              <li key={idx} ref={scrollToLastItem}>
-                {isUser ? (
-                  <div>
-                    <BiSolidUserCircle size={23} />
+              <li
+                key={idx}
+                ref={scrollToLastItem}
+                className={isUser ? "user-message" : "bot-message"}
+              >
+                {!isUser && !isBotLoading && (
+                  <div className="bot-icon">
+                    <FaRobot size={23} />
                   </div>
-                ) : (
-                  //   <img src="images/chatgpt-logo.svg" alt="ChatGPT" />
-                  <FaRobot size={23} />
                 )}
-                <div>
-                  <p className="role-title">{isUser ? "You" : "ChatGPT"}</p>
+                <div
+                  className={
+                    isUser ? "user-message-content" : "bot-message-content"
+                  }
+                >
                   <p>{chatMsg.content}</p>
                 </div>
+                {isUser && (
+                  <div className="user-icon">
+                    <BiSolidUserCircle size={23} />
+                  </div>
+                )}
+                {isBotLoading && (
+                  <div className="loading-indicator">
+                    <p>....</p> {/* Show loading dots */}
+                  </div>
+                )}
               </li>
             );
           })}
@@ -53,8 +76,7 @@ const Chat = ({
       </div>
       <div className="main-bottom">
         {errorText && <p className="errorText">{errorText}</p>}
-        {errorText && <p id="errorTextHint">Backend is not working Properly</p>}
-        <form className="form-container" onSubmit={submitHandler}>
+        <form className="form-container" onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Send a message."
