@@ -6,11 +6,14 @@ import {
   useState,
 } from "react";
 import { MdOutlineArrowLeft, MdOutlineArrowRight } from "react-icons/md";
+import "./App.css";
 import Chat from "./components/Chat";
 import SideBar from "./components/SideBar";
+import { fetchAllChatTitles, fetchChatsByTitle } from "./services/apiService"; // Import your API service
 
 function App() {
   const [text, setText] = useState("");
+  const [activeChat, setActiveChat] = useState([]);
   const [message, setMessage] = useState(null);
   const [previousChats, setPreviousChats] = useState([]);
   const [localChats, setLocalChats] = useState([]);
@@ -18,7 +21,7 @@ function App() {
   const [isResponseLoading, setIsResponseLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
   const [isShowSidebar, setIsShowSidebar] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Loading state for bot response
+  const [isLoading, setIsLoading] = useState(false);
   const scrollToLastItem = useRef(null);
 
   const createNewChat = () => {
@@ -27,10 +30,19 @@ function App() {
     setCurrentTitle(null);
   };
 
-  const backToHistoryPrompt = (uniqueTitle) => {
+  const backToHistoryPrompt = async (uniqueTitle) => {
     setCurrentTitle(uniqueTitle);
     setMessage(null);
     setText("");
+
+    // Fetch the chats for the selected title
+    try {
+      const chats = await fetchChatsByTitle(uniqueTitle);
+      setPreviousChats(chats);
+    } catch (error) {
+      setErrorText("Failed to load chats.");
+      console.error(error);
+    }
   };
 
   const toggleSidebar = useCallback(() => {
@@ -41,7 +53,6 @@ function App() {
     e.preventDefault();
     if (!text) return;
 
-    // Immediately show the user message and set loading state
     setIsLoading(true);
     setIsResponseLoading(true);
     setErrorText("");
@@ -52,20 +63,14 @@ function App() {
       content: text,
     };
 
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: import.meta.env.VITE_AUTH_TOKEN,
-      },
-      body: JSON.stringify(payload),
-    };
-
     try {
-      const response = await fetch(
-        `http://localhost:8000/api/completions`,
-        options
-      );
+      const response = await fetch("http://localhost:8000/api/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       if (response.status === 429) {
         return setErrorText("Too many requests, please try again later.");
@@ -78,7 +83,7 @@ function App() {
         setText("");
       } else {
         setErrorText("");
-        setMessage(data.choices[0].message); // Assuming this gets the assistant's response
+        setMessage(data.choices[0].message);
         setTimeout(() => {
           scrollToLastItem.current?.lastElementChild?.scrollIntoView({
             behavior: "smooth",
@@ -86,7 +91,7 @@ function App() {
         }, 1);
         setTimeout(() => {
           setText("");
-          setIsLoading(false); // Hide loading after response
+          setIsLoading(false);
         }, 2);
       }
     } catch (e) {
@@ -110,12 +115,18 @@ function App() {
     };
   }, []);
 
+  // Fetch all chat titles on component mount
   useEffect(() => {
-    const storedChats = localStorage.getItem("previousChats");
+    const fetchTitles = async () => {
+      try {
+        const chats = await fetchAllChatTitles();
+        setLocalChats(chats); // Use API response to set localChats
+      } catch (error) {
+        console.error("Failed to fetch chat titles:", error);
+      }
+    };
 
-    if (storedChats) {
-      setLocalChats(JSON.parse(storedChats));
-    }
+    fetchTitles();
   }, []);
 
   useEffect(() => {
@@ -139,8 +150,7 @@ function App() {
       setPreviousChats((prevChats) => [...prevChats, newChat, responseMessage]);
       setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
-      const updatedChats = [...localChats, newChat, responseMessage];
-      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
+      // Here you could also post the new chat to your backend if needed
     }
   }, [message, currentTitle]);
 
@@ -159,6 +169,8 @@ function App() {
   return (
     <div className="container">
       <SideBar
+        setCurrentTitle={setCurrentTitle}
+        setPreviousChats={setPreviousChats}
         uniqueTitles={uniqueTitles}
         localUniqueTitles={localUniqueTitles}
         createNewChat={createNewChat}
@@ -174,7 +186,7 @@ function App() {
         submitHandler={submitHandler}
         errorText={errorText}
         scrollToLastItem={scrollToLastItem}
-        isLoading={isLoading} // Pass loading state to Chat
+        isLoading={isLoading}
       />
       {isShowSidebar ? (
         <MdOutlineArrowRight

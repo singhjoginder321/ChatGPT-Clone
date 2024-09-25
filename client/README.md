@@ -1,33 +1,70 @@
-# React ChatGPT Clone
+# Getting Started with Create React App
 
-The ChatGPT clone uses chat completion v1 API with your gpt model and express.js to run a server requesting client-side requests.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Screenshots
+## Available Scripts
 
-<img width="1430" alt="react-chatgpt-clone" src="https://github.com/uigywnkiub/react-chatgpt-clone/assets/29861553/c3f8b227-5567-4f29-95ff-43ea82069c08">
+In the project directory, you can run:
 
-## Installation
+### `npm start`
 
-Copy all variables from `.env.example` to new created `.env` file and change the appropriate variables with your values. You can get all necessary data at [Platform OpenAI](https://platform.openai.com/api-keys).
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-Install dependencies.
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-```bash
-  npm i
-```
+### `npm test`
 
-Start backend server with nodemon.
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-```bash
-  npm run dev:back
-```
+### `npm run build`
 
-Start frontend server with vite.
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-```bash
-  npm run dev:front
-```
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-## License
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-[MIT License](LICENSE)
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

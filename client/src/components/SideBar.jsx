@@ -3,14 +3,17 @@ import { AiFillDelete } from "react-icons/ai";
 import { BiPlus, BiSolidUserCircle } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa6";
+import { deleteAllChats, fetchChatsByTitle } from "../services/apiService"; // Import the API function
 import "../style/Sidebar.css";
 import ConfirmationCard from "./ConfirmationCard"; // Import the ConfirmationCard
 
 const SideBar = ({
+  setCurrentTitle,
+  setPreviousChats,
   uniqueTitles,
   localUniqueTitles,
   createNewChat,
-  backToHistoryPrompt,
+  setCurrentChat,
   isShowSidebar,
 }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -20,9 +23,15 @@ const SideBar = ({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const popupRef = useRef(null);
 
-  const clearConversations = () => {
-    localStorage.clear();
-    window.location.reload();
+  const clearConversations = async () => {
+    try {
+      await deleteAllChats(); // Call the API to delete all chats
+      localStorage.clear(); // Optionally clear local storage
+      window.location.reload(); // Reload the page to reflect changes
+    } catch (error) {
+      console.error("Failed to clear conversations:", error);
+      // Optionally handle error, e.g., show a notification
+    }
   };
 
   const deleteChat = (title) => {
@@ -63,6 +72,18 @@ const SideBar = ({
 
   const handleCancelClear = () => {
     setShowConfirmation(false);
+  };
+
+  // Function to fetch chats by title and set the current chat
+  const backToHistoryPrompt = async (uniqueTitle) => {
+    try {
+      const chats = await fetchChatsByTitle(uniqueTitle);
+      setPreviousChats(chats); // Set the previous chats to the fetched chats
+      setCurrentTitle(uniqueTitle); // Set the current title
+    } catch (error) {
+      console.error("Error fetching chats:", error);
+      // Handle error, e.g., show a notification
+    }
   };
 
   useEffect(() => {
@@ -106,12 +127,17 @@ const SideBar = ({
             <p>Ongoing</p>
             <ul>
               {uniqueTitles.map((uniqueTitle, idx) => (
-                <li key={idx} className="chat-item">
-                  <span onClick={() => backToHistoryPrompt(uniqueTitle)}>
-                    {uniqueTitle}
-                  </span>
+                <li
+                  key={idx}
+                  className="chat-item"
+                  onClick={() => backToHistoryPrompt(uniqueTitle)}
+                >
+                  <span className="chat-button">{uniqueTitle}</span>
                   <button
-                    onClick={(e) => handleMenuClick(uniqueTitle, e)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering the parent onClick
+                      handleMenuClick(uniqueTitle, e);
+                    }}
                     className="menu-button"
                   >
                     <BsThreeDots size={20} />
@@ -126,12 +152,17 @@ const SideBar = ({
             <p>Previous</p>
             <ul>
               {localUniqueTitles.map((uniqueTitle, idx) => (
-                <li key={idx} className="chat-item">
-                  <span onClick={() => backToHistoryPrompt(uniqueTitle)}>
-                    {uniqueTitle}
-                  </span>
+                <li
+                  key={idx}
+                  className="chat-item"
+                  onClick={() => backToHistoryPrompt(uniqueTitle)}
+                >
+                  <span className="chat-button">{uniqueTitle}</span>
                   <button
-                    onClick={(e) => handleMenuClick(uniqueTitle, e)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering the parent onClick
+                      handleMenuClick(uniqueTitle, e);
+                    }}
                     className="menu-button"
                   >
                     <BsThreeDots size={20} />
@@ -148,7 +179,7 @@ const SideBar = ({
           className="sidebar-info-upgrade"
         >
           <FaTrash size={20} />
-          <span>Clear Conversation</span>
+          <span>Delete Conversations</span>
         </div>
         <div className="sidebar-info-user">
           <BiSolidUserCircle size={20} />

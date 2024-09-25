@@ -105,12 +105,9 @@
   display: flex;
   align-items: center;
   background-color: #d3bfdb;
-  box-shadow:
-    rgb(0, 0, 0, 0.1) 0 3.3rem 3.4rem,
-    rgb(0, 0, 0, 0.1) 0 -0.7rem 1.8rem,
-    rgb(0, 0, 0, 0.1) 0 0.2rem 0.3rem,
-    rgb(0, 0, 0, 0.1) 0 0.7rem 0.2rem,
-    rgb(0, 0, 0, 0.1) 0 0.2rem 0.3rem;
+  box-shadow: rgb(0, 0, 0, 0.1) 0 3.3rem 3.4rem,
+    rgb(0, 0, 0, 0.1) 0 -0.7rem 1.8rem, rgb(0, 0, 0, 0.1) 0 0.2rem 0.3rem,
+    rgb(0, 0, 0, 0.1) 0 0.7rem 0.2rem, rgb(0, 0, 0, 0.1) 0 0.2rem 0.3rem;
 }
 
 .form-container input {
@@ -165,5 +162,11 @@
   }
   100% {
     opacity: 1;
+  }
+}
+
+@media screen and (max-width: 1080px) {
+  .form-container {
+    width: auto;
   }
 }
