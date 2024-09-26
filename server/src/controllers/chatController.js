@@ -18,7 +18,7 @@ exports.handleChatCompletion = async (req, res) => {
 
     // Create assistant's response (you can customize this as needed)
     const assistantContent =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit."; // Your response logic here
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit"; // Your response logic here
 
     // Save assistant message
     await db.query(
@@ -47,7 +47,7 @@ exports.handleChatCompletion = async (req, res) => {
 exports.getAllChats = async (req, res) => {
   try {
     const result = await db.query(
-      "SELECT * FROM chats ORDER BY created_at DESC"
+      "SELECT * FROM chats ORDER BY created_at ASC"
     ); // You might want to adjust the order based on your requirements
 
     // If no chats are found

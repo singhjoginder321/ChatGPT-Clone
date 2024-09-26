@@ -38,3 +38,25 @@ export const deleteAllChats = async () => {
     throw error;
   }
 };
+
+//function to delete chat by title
+export const deleteChatsByTitle = async (title) => {
+  try {
+    await axios.delete(`${API_BASE_URL}/deleteChatsByTitle`, {
+      data: { title },
+    });
+    return true; // Return true if the delete was successful
+  } catch (error) {
+    console.error("Error deleting chat:", error);
+    throw error; // Rethrow the error for handling in the caller
+  }
+};
+
+// Function to rename a chat title
+export const renameChatTitle = async (oldTitle, newTitle) => {
+  const response = await axios.put(`${API_BASE_URL}/renameTitle`, {
+    oldTitle,
+    newTitle,
+  });
+  return response.data;
+};

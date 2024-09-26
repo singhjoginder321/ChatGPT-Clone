@@ -9,7 +9,7 @@ import { MdOutlineArrowLeft, MdOutlineArrowRight } from "react-icons/md";
 import "./App.css";
 import Chat from "./components/Chat";
 import SideBar from "./components/SideBar";
-import { fetchAllChatTitles, fetchChatsByTitle } from "./services/apiService"; // Import your API service
+import { fetchAllChatTitles, fetchChatsByTitle } from "./services/apiService";
 
 function App() {
   const [text, setText] = useState("");
@@ -23,6 +23,7 @@ function App() {
   const [isShowSidebar, setIsShowSidebar] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const scrollToLastItem = useRef(null);
+  const [uniqueTitles, setUniqueTitles] = useState([]);
 
   const createNewChat = () => {
     setMessage(null);
@@ -30,24 +31,39 @@ function App() {
     setCurrentTitle(null);
   };
 
-  const backToHistoryPrompt = async (uniqueTitle) => {
-    setCurrentTitle(uniqueTitle);
-    setMessage(null);
-    setText("");
+  // Fetch chats when currentTitle changes
+  useEffect(() => {
+    const fetchChats = async () => {
+      if (currentTitle) {
+        try {
+          const chats = await fetchChatsByTitle(currentTitle);
+          setPreviousChats(chats);
+        } catch (error) {
+          setErrorText("Failed to load chats.");
+          console.error(error);
+        }
+      }
+    };
 
-    // Fetch the chats for the selected title
-    try {
-      const chats = await fetchChatsByTitle(uniqueTitle);
-      setPreviousChats(chats);
-    } catch (error) {
-      setErrorText("Failed to load chats.");
-      console.error(error);
-    }
-  };
+    fetchChats();
+  }, [currentTitle]);
 
   const toggleSidebar = useCallback(() => {
     setIsShowSidebar((prev) => !prev);
   }, []);
+
+  const handleRename = (oldTitle, newTitle) => {
+    setPreviousChats((prev) =>
+      prev.map((chat) =>
+        chat.title === oldTitle ? { ...chat, title: newTitle } : chat
+      )
+    );
+    setLocalChats((prev) =>
+      prev.map((chat) =>
+        chat.title === oldTitle ? { ...chat, title: newTitle } : chat
+      )
+    );
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -58,7 +74,7 @@ function App() {
     setErrorText("");
 
     const payload = {
-      title: currentTitle || "New Chat",
+      title: currentTitle || text,
       role: "user",
       content: text,
     };
@@ -115,12 +131,11 @@ function App() {
     };
   }, []);
 
-  // Fetch all chat titles on component mount
   useEffect(() => {
     const fetchTitles = async () => {
       try {
         const chats = await fetchAllChatTitles();
-        setLocalChats(chats); // Use API response to set localChats
+        setLocalChats(chats);
       } catch (error) {
         console.error("Failed to fetch chat titles:", error);
       }
@@ -149,8 +164,6 @@ function App() {
 
       setPreviousChats((prevChats) => [...prevChats, newChat, responseMessage]);
       setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
-
-      // Here you could also post the new chat to your backend if needed
     }
   }, [message, currentTitle]);
 
@@ -158,9 +171,12 @@ function App() {
     (prevChat) => prevChat.title === currentTitle
   );
 
-  const uniqueTitles = Array.from(
-    new Set(previousChats.map((prevChat) => prevChat.title).reverse())
-  );
+  useEffect(() => {
+    const unique = Array.from(
+      new Set(previousChats.map((prevChat) => prevChat.title).reverse())
+    );
+    setUniqueTitles(unique);
+  }, [previousChats]);
 
   const localUniqueTitles = Array.from(
     new Set(localChats.map((prevChat) => prevChat.title).reverse())
@@ -169,14 +185,15 @@ function App() {
   return (
     <div className="container">
       <SideBar
+        handleRename={handleRename}
         setCurrentTitle={setCurrentTitle}
         setPreviousChats={setPreviousChats}
         uniqueTitles={uniqueTitles}
         localUniqueTitles={localUniqueTitles}
         createNewChat={createNewChat}
-        backToHistoryPrompt={backToHistoryPrompt}
         isShowSidebar={isShowSidebar}
         toggleSidebar={toggleSidebar}
+        setUniqueTitles={setUniqueTitles}
       />
       <Chat
         currentChat={currentChat}
