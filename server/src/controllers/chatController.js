@@ -1,7 +1,6 @@
 const db = require("../config/db");
 
 // Handle chat completion request
-// Handle chat completion request
 exports.handleChatCompletion = async (req, res) => {
   const { title, content } = req.body;
 
@@ -16,7 +15,7 @@ exports.handleChatCompletion = async (req, res) => {
       [title, "user", content]
     );
 
-    // Create assistant's response (you can customize this as needed)
+    // Create assistant's response 
     const assistantContent =
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit"; // Your response logic here
 
