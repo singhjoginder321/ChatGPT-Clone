@@ -18,6 +18,7 @@ exports.handleChatCompletion = async (req, res) => {
       [chat_id]
     );
 
+<<<<<<< HEAD
     if (existingTitle.rows.length === 0) {
       await db.query("INSERT INTO titles (chat_id, title) VALUES ($1, $2)", [
         chat_id,
@@ -32,6 +33,9 @@ exports.handleChatCompletion = async (req, res) => {
     );
 
     // Create assistant's response (your logic here)
+=======
+    // Create assistant's response 
+>>>>>>> 02036104d2573fd7cdba64e678d843c92044e05a
     const assistantContent =
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip."; // Example response
 
