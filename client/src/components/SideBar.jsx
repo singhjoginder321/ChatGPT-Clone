@@ -5,14 +5,19 @@ import { BsThreeDots } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa6";
 import {
   deleteAllChats,
-  deleteChatsByTitle,
-  fetchChatsByTitle,
+  deleteChatsByChatId,
+  fetchChatsByChatId,
   renameChatTitle,
 } from "../services/apiService"; // Import the API functions
 import "../style/Sidebar.css";
 import ConfirmationCard from "./ConfirmationCard"; // Import the ConfirmationCard
 
 const SideBar = ({
+  setUniqueTitles,
+  previousChats,
+  setLocalChats,
+  setCurrentChatId,
+  currentChatId,
   handleRename,
   setCurrentTitle,
   setPreviousChats,
@@ -23,6 +28,7 @@ const SideBar = ({
 }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedChat, setSelectedChat] = useState(null);
+  // const [selectedId, setSelectedId] = useState();
   const [newTitle, setNewTitle] = useState("");
   const [isRenaming, setIsRenaming] = useState(false); // New state for renaming
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
@@ -42,7 +48,7 @@ const SideBar = ({
 
   const deleteChat = async (title) => {
     try {
-      await deleteChatsByTitle(title); // Call the API to delete the chat by title
+      await deleteChatsByChatId(title); // Call the API to delete the chat by title
       setPreviousChats((prev) => prev.filter((chat) => chat.title !== title));
       window.location.reload(); // Reload to reflect changes
     } catch (error) {
@@ -77,15 +83,26 @@ const SideBar = ({
     setShowConfirmation(false);
   };
 
-  const backToHistoryPrompt = async (uniqueTitle) => {
+  const backToHistoryPrompt = async (title, chat_id) => {
     try {
-      const chats = await fetchChatsByTitle(uniqueTitle);
-      setPreviousChats(chats);
-      setCurrentTitle(uniqueTitle);
+      if (chat_id) {
+        const chats = await fetchChatsByChatId(chat_id);
+        setCurrentChatId(chats.chatId);
+        // setLocalChats(chats);
+        setPreviousChats(chats);
+        setUniqueTitles([{ chat_id: chat_id, title: title }]);
+        // console.log("chats inside backtohistprom", chats);
+        // console.log("Prevchats inside backtohistprom", previousChats);
+        setCurrentTitle(title); // This sets the title after fetching
+      }
     } catch (error) {
       console.error("Error fetching chats:", error);
     }
   };
+
+  // useEffect(() => {
+  //   console.log("Updated previousChats:", previousChats);
+  // }, [previousChats]); // This runs every time previousChats changes
 
   const handleRenameChat = async (event) => {
     if (event.key === "Enter" && newTitle) {
@@ -103,6 +120,7 @@ const SideBar = ({
   };
 
   useEffect(() => {
+    console.log();
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
@@ -142,9 +160,9 @@ const SideBar = ({
           <>
             <p>Ongoing</p>
             <ul>
-              {uniqueTitles.map((uniqueTitle, idx) => (
+              {uniqueTitles.map((chat, idx) => (
                 <li key={idx} className="chat-item">
-                  {isRenaming && selectedChat === uniqueTitle ? (
+                  {isRenaming && selectedChat === chat.chat_id ? (
                     <input
                       type="text"
                       value={newTitle}
@@ -157,14 +175,16 @@ const SideBar = ({
                     <>
                       <span
                         className="chat-button"
-                        onClick={() => backToHistoryPrompt(uniqueTitle)}
+                        onClick={() =>
+                          backToHistoryPrompt(chat.title, chat.chat_id)
+                        }
                       >
-                        {uniqueTitle}
+                        {chat.title}
                       </span>
                       <button
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent triggering the parent onClick
-                          handleMenuClick(uniqueTitle, e);
+                          e.stopPropagation();
+                          handleMenuClick(chat.chat_id, e);
                         }}
                         className="menu-button"
                       >
@@ -177,13 +197,56 @@ const SideBar = ({
             </ul>
           </>
         )}
+        {/* {uniqueTitles && (
+          <>
+            <p>Ongoing</p>
+            <ul>
+              <li className="chat-item">
+                {isRenaming && selectedChat === uniqueTitles.chat_id ? (
+                  <input
+                    type="text"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    onKeyDown={handleRenameChat}
+                    placeholder="New title..."
+                    autoFocus
+                  />
+                ) : (
+                  <>
+                    <span
+                      className="chat-button"
+                      onClick={() =>
+                        backToHistoryPrompt(
+                          uniqueTitles.title,
+                          uniqueTitles.chat_id
+                        )
+                      }
+                    >
+                      {uniqueTitles.title}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleMenuClick(uniqueTitles.chat_id, e);
+                      }}
+                      className="menu-button"
+                    >
+                      <BsThreeDots size={20} />
+                    </button>
+                  </>
+                )}
+              </li>
+            </ul>
+          </>
+        )} */}
+
         {localUniqueTitles.length > 0 && (
           <>
             <p>Previous</p>
             <ul>
-              {localUniqueTitles.map((uniqueTitle, idx) => (
+              {localUniqueTitles.map((chat, idx) => (
                 <li key={idx} className="chat-item">
-                  {isRenaming && selectedChat === uniqueTitle ? (
+                  {isRenaming && selectedChat === chat.title ? (
                     <input
                       type="text"
                       value={newTitle}
@@ -196,14 +259,16 @@ const SideBar = ({
                     <>
                       <span
                         className="chat-button"
-                        onClick={() => backToHistoryPrompt(uniqueTitle)}
+                        onClick={() =>
+                          backToHistoryPrompt(chat.title, chat.chat_id)
+                        } // Use chat_id for fetching
                       >
-                        {uniqueTitle}
+                        {chat.title}
                       </span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent triggering the parent onClick
-                          handleMenuClick(uniqueTitle, e);
+                          handleMenuClick(chat.title, e);
                         }}
                         className="menu-button"
                       >

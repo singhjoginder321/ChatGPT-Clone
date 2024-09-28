@@ -5,10 +5,10 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8000/api"; // Your API base URL
 
 // Function to fetch chats by title
-export const fetchChatsByTitle = async (title) => {
+export const fetchChatsByChatId = async (chat_id) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/getChatsByTitle`, {
-      title,
+    const response = await axios.post(`${API_BASE_URL}/getChatsByChatId`, {
+      chat_id,
     });
     return response.data; // Assuming the response data is the chat array
   } catch (error) {
@@ -40,10 +40,10 @@ export const deleteAllChats = async () => {
 };
 
 //function to delete chat by title
-export const deleteChatsByTitle = async (title) => {
+export const deleteChatsByChatId = async (chat_id) => {
   try {
-    await axios.delete(`${API_BASE_URL}/deleteChatsByTitle`, {
-      data: { title },
+    await axios.delete(`${API_BASE_URL}/deleteChatsByChatId`, {
+      chat_id,
     });
     return true; // Return true if the delete was successful
   } catch (error) {
@@ -53,9 +53,9 @@ export const deleteChatsByTitle = async (title) => {
 };
 
 // Function to rename a chat title
-export const renameChatTitle = async (oldTitle, newTitle) => {
+export const renameChatTitle = async (chat_id, newTitle) => {
   const response = await axios.put(`${API_BASE_URL}/renameTitle`, {
-    oldTitle,
+    chat_id,
     newTitle,
   });
   return response.data;

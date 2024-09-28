@@ -6,18 +6,19 @@ import {
   useState,
 } from "react";
 import { MdOutlineArrowLeft, MdOutlineArrowRight } from "react-icons/md";
+import { v4 as uuidv4 } from "uuid"; // Import uuid
 import "./App.css";
 import Chat from "./components/Chat";
 import SideBar from "./components/SideBar";
-import { fetchAllChatTitles, fetchChatsByTitle } from "./services/apiService";
+import { fetchAllChatTitles, fetchChatsByChatId } from "./services/apiService";
 
 function App() {
   const [text, setText] = useState("");
-  const [activeChat, setActiveChat] = useState([]);
   const [message, setMessage] = useState(null);
   const [previousChats, setPreviousChats] = useState([]);
   const [localChats, setLocalChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
+  const [currentChatId, setCurrentChatId] = useState(null);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
   const [isShowSidebar, setIsShowSidebar] = useState(false);
@@ -29,24 +30,26 @@ function App() {
     setMessage(null);
     setText("");
     setCurrentTitle(null);
+    setCurrentChatId(null); // Reset the chat ID
+    setPreviousChats([]);
   };
 
   // Fetch chats when currentTitle changes
-  useEffect(() => {
-    const fetchChats = async () => {
-      if (currentTitle) {
-        try {
-          const chats = await fetchChatsByTitle(currentTitle);
-          setPreviousChats(chats);
-        } catch (error) {
-          setErrorText("Failed to load chats.");
-          console.error(error);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchChats = async () => {
+  //     if (currentTitle) {
+  //       try {
+  //         const chats = await fetchChatsByChatId(currentChatId);
+  //         // setPreviousChats(chats);
+  //       } catch (error) {
+  //         setErrorText("Failed to load chats.");
+  //         console.error(error);
+  //       }
+  //     }
+  //   };
 
-    fetchChats();
-  }, [currentTitle]);
+  //   fetchChats();
+  // }, [currentTitle]);
 
   const toggleSidebar = useCallback(() => {
     setIsShowSidebar((prev) => !prev);
@@ -73,8 +76,12 @@ function App() {
     setIsResponseLoading(true);
     setErrorText("");
 
+    const newChatId = currentChatId ? currentChatId : uuidv4();
+    setCurrentChatId(newChatId);
+    // Use currentChatId if it's already set
     const payload = {
-      title: currentTitle || text,
+      chat_id: newChatId, // Use the existing chat ID
+      title: currentTitle || text, // Set title to currentTitle or text
       role: "user",
       content: text,
     };
@@ -95,11 +102,14 @@ function App() {
       const data = await response.json();
 
       if (data.error) {
+        setUniqueTitles([]);
         setErrorText(data.error.message);
         setText("");
       } else {
+        setUniqueTitles([{ chat_id: newChatId, title: text }]);
         setErrorText("");
         setMessage(data.choices[0].message);
+
         setTimeout(() => {
           scrollToLastItem.current?.lastElementChild?.scrollIntoView({
             behavior: "smooth",
@@ -136,6 +146,8 @@ function App() {
       try {
         const chats = await fetchAllChatTitles();
         setLocalChats(chats);
+
+        // console.log(uniqueTitles);
       } catch (error) {
         console.error("Failed to fetch chat titles:", error);
       }
@@ -143,20 +155,23 @@ function App() {
 
     fetchTitles();
   }, []);
-
+  // console.log("localChats : ", localChats);
   useEffect(() => {
     if (!currentTitle && text && message) {
-      setCurrentTitle(text);
+      setCurrentTitle(text); // Set title to the text input
+      //setCurrentChatId(uuidv4()); // Generate a unique ID for the new chat
     }
 
     if (currentTitle && text && message) {
       const newChat = {
-        title: currentTitle,
+        chat_id: currentChatId, // Use the unique chat ID
+        title: currentTitle, // Keep the title same
         role: "user",
         content: text,
       };
 
       const responseMessage = {
+        chat_id: currentChatId, // Use the same chat ID for response
         title: currentTitle,
         role: message.role,
         content: message.content,
@@ -167,24 +182,79 @@ function App() {
     }
   }, [message, currentTitle]);
 
-  const currentChat = (localChats || previousChats).filter(
+  // console.log("current title before setting currentChat: ", currentTitle);
+  // const currentChat = (localChats || previousChats).filter(
+  //   (prevChat) => prevChat.title === currentTitle
+  // );
+  const currentChat = previousChats.filter(
     (prevChat) => prevChat.title === currentTitle
   );
 
-  useEffect(() => {
-    const unique = Array.from(
-      new Set(previousChats.map((prevChat) => prevChat.title).reverse())
-    );
-    setUniqueTitles(unique);
-  }, [previousChats]);
+  // console.log("current chat:", currentChat);
+  // console.log("previous chat below setting current Chat", previousChats);
+  // console.log("local chat below setting current chat:", localChats);
+
+  // useEffect(() => {
+  //   const unique = Array.from(
+  //     new Set(previousChats.map((prevChat) => prevChat.title).reverse())
+  //   );
+  //   setUniqueTitles(unique);
+  // }, [previousChats]);
+
+  // useEffect(() => {
+  //   const uniqueTitlesMap = {};
+
+  //   const uniqueTitles = previousChats
+  //     .map((prevChat) => ({
+  //       title: prevChat.title,
+  //       chat_id: prevChat.chat_id,
+  //     }))
+  //     .reverse() // Reverse if you want the latest chats first
+  //     .filter((chat) => {
+  //       // Check if the title already exists in the map
+  //       if (!uniqueTitlesMap[chat.title]) {
+  //         uniqueTitlesMap[chat.title] = true; // Mark this title as seen
+  //         return true; // Keep this chat object
+  //       }
+  //       return false; // Discard duplicatesx
+  //     });
+
+  //   setUniqueTitles(uniqueTitles);
+  // }, [previousChats]);
+
+  // console.log("previous chat ", previousChats);
+
+  // const localUniqueTitles = Array.from(
+  //   new Set(localChats.map((prevChat) => prevChat.title).reverse())
+  // ).filter((title) => !uniqueTitles.includes(title));
+
+  // const localUniqueTitles = localChats.map((chat) => ({
+  //   title: chat.title,
+  //   chat_id: chat.chat_id,
+  // }));
 
   const localUniqueTitles = Array.from(
-    new Set(localChats.map((prevChat) => prevChat.title).reverse())
-  ).filter((title) => !uniqueTitles.includes(title));
-
+    new Set(
+      localChats
+        .map((prevChat) =>
+          JSON.stringify({ title: prevChat.title, chat_id: prevChat.chat_id })
+        ) // Create a unique string for each chat
+        .reverse()
+    )
+  )
+    .map((item) => JSON.parse(item)) // Parse back to object
+    .filter(
+      (chat) =>
+        !uniqueTitles.some((uniqueChat) => uniqueChat.chat_id === chat.chat_id)
+    );
+  // console.log("Local Unique Titles :", localUniqueTitles);
+  // console.log("Unique Titles : ", uniqueTitles);
   return (
     <div className="container">
       <SideBar
+        previousChats={previousChats}
+        currentChatId={currentChatId}
+        setCurrentChatId={setCurrentChatId}
         handleRename={handleRename}
         setCurrentTitle={setCurrentTitle}
         setPreviousChats={setPreviousChats}
@@ -194,6 +264,9 @@ function App() {
         isShowSidebar={isShowSidebar}
         toggleSidebar={toggleSidebar}
         setUniqueTitles={setUniqueTitles}
+        localChats={localChats}
+        setLocalChats={setLocalChats}
+        currentTitle={currentTitle}
       />
       <Chat
         currentChat={currentChat}
