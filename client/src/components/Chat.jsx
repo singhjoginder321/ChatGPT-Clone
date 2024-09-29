@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import { BiSend, BiSolidUserCircle } from "react-icons/bi";
 import { FaRobot } from "react-icons/fa";
+import ailogo from "../assets/ai-icon.svg";
+import userIcon from "../assets/user-icon2.svg";
 import "../style/Chat.css";
 
 const Chat = ({
@@ -24,7 +26,13 @@ const Chat = ({
     <section className="main">
       {!currentChat.length && (
         <div className="empty-chat-container">
-          <FaRobot size={45} />
+          {/* <FaRobot size={45} /> */}
+          <img
+            className="ai-logo"
+            src={ailogo}
+            alt="AI Logo"
+            style={{ width: "45px", height: "45px" }}
+          />
           <h1>Kanerika GPT</h1>
           <h3>How can I help you today?</h3>
         </div>
@@ -40,7 +48,13 @@ const Chat = ({
               <li key={idx} className={isUser ? "user-message" : "bot-message"}>
                 {!isUser && !isBotLoading && (
                   <div className="bot-icon">
-                    <FaRobot size={23} />
+                    {/* <FaRobot size={23} /> */}
+                    <img
+                      className="ai-logo"
+                      src={ailogo}
+                      alt="AI Logo"
+                      style={{ width: "23px", height: "23px" }}
+                    />
                   </div>
                 )}
                 <div
@@ -57,7 +71,13 @@ const Chat = ({
                 </div>
                 {isUser && (
                   <div className="user-icon">
-                    <BiSolidUserCircle size={23} />
+                    {/* <BiSolidUserCircle size={23} /> */}
+                    <img
+                      className="user-logo"
+                      src={userIcon}
+                      alt="AI Logo"
+                      style={{ width: "23px", height: "23px" }}
+                    />
                   </div>
                 )}
               </li>
@@ -67,7 +87,13 @@ const Chat = ({
           {isResponseLoading && (
             <li className="bot-message">
               <div className="bot-icon">
-                <FaRobot size={23} />
+                {/* <FaRobot size={23} /> */}
+                <img
+                  className="ai-logo"
+                  src={ailogo}
+                  alt="AI Logo"
+                  style={{ width: "23px", height: "23px" }}
+                />
               </div>
               <div className="bot-message-content">
                 <p>....</p>

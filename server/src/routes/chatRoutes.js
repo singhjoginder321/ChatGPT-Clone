@@ -14,7 +14,10 @@ router.post("/getChatsByChatId", chatController.getChatsByChatId);
 router.delete("/deleteAllChats", chatController.deleteAllChats);
 
 //delete chat by title
-router.delete("/deleteChatsByChatId", chatController.deleteChatsByChatId);
+router.delete(
+  "/deleteChatsByChatId/:chat_id",
+  chatController.deleteChatsByChatId
+);
 
 //rename title
 router.put("/renameTitle", chatController.renameChatTitle);

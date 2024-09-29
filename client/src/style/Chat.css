@@ -39,6 +39,7 @@
   border-radius: 0.5rem;
   max-width: 70%; /* Limit width */
   margin-left: auto; /* Align to right */
+  color: #4a4a4a;
 }
 
 .bot-message-content {
@@ -46,6 +47,7 @@
   padding: 0.5rem;
   border-radius: 0.5rem;
   max-width: 85%; /* Limit width */
+  color: #110606;
 }
 
 .user-icon {

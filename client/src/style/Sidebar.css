@@ -3,7 +3,7 @@
 .sidebar {
   width: 16rem;
   padding: 1rem;
-  gap: 1rem;
+  gap: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.8rem 1rem;
+  padding: 0.3rem 0.5rem;
   border-radius: 0.3rem;
   border: 0.05rem solid rgba(0, 0, 0, 0.1);
   background-color: #f5e1f0;
@@ -69,6 +69,30 @@
   background-color: #f5f0ff;
   margin-bottom: 0.5rem; /* Space between chat items */
   border-radius: 0.3rem;
+  color: #4a4a4a;
+}
+.chat-item-ongoing {
+  display: flex;
+  justify-content: space-between; /* Space between chat title and menu button */
+  align-items: center; /* Center items vertically */
+  overflow: hidden; /* Prevent overflow */
+  padding: 0.5rem;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 24, 241, 1) 0%,
+    rgba(255, 0, 166, 1) 0%,
+    rgba(73, 64, 204, 1) 65%
+  );
+  margin-bottom: 0.5rem; /* Space between chat items */
+  border-radius: 0.3rem;
+  color: white; /* Set text color to white */
+}
+
+.chat-item-ongoing span {
+  flex: 1; /* Allow title to take available space */
+  overflow: hidden; /* Prevent overflow */
+  text-overflow: ellipsis; /* Add ellipsis for overflow text */
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .chat-item span {
@@ -76,6 +100,35 @@
   overflow: hidden; /* Prevent overflow */
   text-overflow: ellipsis; /* Add ellipsis for overflow text */
   white-space: nowrap; /* Prevent text wrapping */
+}
+
+.chat-item input {
+  width: 100%; /* Full width */
+  padding: 2px; /* More padding for better touch */
+  font-size: 16px; /* Increase font size */
+  border: 1px solid #ccc; /* Border color */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.chat-item input:focus {
+  border-color: #007bff; /* Change border color on focus */
+  outline: none; /* Remove default outline */
+}
+
+.chat-item-ongoing input {
+  width: 100%; /* Full width */
+  /* height: 90%; */
+  padding: 2px; /* More padding for better touch */
+  font-size: 16px; /* Increase font size */
+  border: 1px solid #ccc; /* Border color */
+  border-radius: 2px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.chat-item-ongoing input:focus {
+  border-color: #007bff; /* Change border color on focus */
+  outline: none; /* Remove default outline */
 }
 
 .menu-button {
@@ -89,6 +142,16 @@
   width: 100%;
   padding-top: 1rem;
   border-top: 0.05rem solid rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-info-user-1 {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.5rem;
+  margin-bottom: -0.8rem;
+  margin-left: 1.5rem;
+  margin-top: -0.8rem;
 }
 
 .sidebar-info-upgrade,
@@ -131,4 +194,65 @@
 
 .popup-menu li:hover {
   background-color: #f0f0f0; /* Highlight on hover */
+}
+
+.user-image {
+  width: 9rem;
+  height: auto;
+  margin-bottom: -0.4rem;
+  margin-left: -2.5rem;
+  margin-top: -1rem;
+}
+
+.archive-icon {
+  padding: 0.1rem;
+  width: 1.5rem;
+  height: auto;
+  margin-left: 8px;
+  margin-bottom: 0.4rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.archive-button-container {
+  position: relative;
+  display: inline-block; /* Keep it inline with other elements */
+}
+
+.popup {
+  position: absolute;
+  top: 80%; /* Position below the button */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  white-space: nowrap; /* Prevent text wrapping */
+  z-index: 10; /* Ensure it appears above other elements */
+}
+
+.white-icon {
+  color: white; /* Set icon color to white */
+}
+
+.ai-logo {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 24, 241, 1) 0%,
+    rgba(255, 0, 166, 1) 0%,
+    rgba(73, 64, 204, 1) 65%
+  );
+  border-radius: 20%;
+}
+
+.user-logo {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 24, 241, 1) 0%,
+    rgba(255, 0, 166, 1) 0%,
+    rgba(73, 64, 204, 1) 65%
+  );
+  border-radius: 50%;
 }

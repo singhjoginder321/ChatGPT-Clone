@@ -3,6 +3,8 @@ import { AiFillDelete } from "react-icons/ai";
 import { BiPlus, BiSolidUserCircle } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa6";
+import archiveIcon from "../assets/archive icon.svg";
+import kanerikaLogo from "../assets/logo-kanerika.png";
 import {
   deleteAllChats,
   deleteChatsByChatId,
@@ -28,12 +30,14 @@ const SideBar = ({
 }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedChat, setSelectedChat] = useState(null);
-  // const [selectedId, setSelectedId] = useState();
   const [newTitle, setNewTitle] = useState("");
-  const [isRenaming, setIsRenaming] = useState(false); // New state for renaming
+  const [isRenaming, setIsRenaming] = useState(false); // State for renaming
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const [adjustedPosition, setAdjustedPosition] = useState({ top: 0, left: 0 });
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // New state for delete confirmation
+  const [isHovered, setIsHovered] = useState(false); //for hover on archive chats button
+  const [chatToDelete, setChatToDelete] = useState(null); // Chat ID for deletion
   const popupRef = useRef(null);
 
   const clearConversations = async () => {
@@ -46,18 +50,35 @@ const SideBar = ({
     }
   };
 
-  const deleteChat = async (title) => {
-    try {
-      await deleteChatsByChatId(title); // Call the API to delete the chat by title
-      setPreviousChats((prev) => prev.filter((chat) => chat.title !== title));
-      window.location.reload(); // Reload to reflect changes
-    } catch (error) {
-      console.error("Failed to delete chat:", error);
+  // New function to handle delete chat click
+  const handleDeleteChatClick = (chat_id) => {
+    setChatToDelete(chat_id);
+    setShowDeleteConfirmation(true);
+    setShowPopup(false); // Close the popup when confirming deletion
+  };
+
+  // Confirm deletion of the selected chat
+  const handleDeleteConfirmed = async () => {
+    if (chatToDelete) {
+      await deleteChatsByChatId(chatToDelete); // Call the delete function
+      setChatToDelete(null); // Reset the chat to delete
+      setShowDeleteConfirmation(false); // Close confirmation card
+      window.location.reload();
     }
   };
 
-  const handleMenuClick = (title, event) => {
-    setSelectedChat(title);
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirmation(false); // Close confirmation card
+    setChatToDelete(null); // Reset the chat to delete
+  };
+
+  const handleMenuClick = (chat, event) => {
+    setCurrentTitle(chat.title);
+    // console.log("current title", chat.title);
+    setNewTitle(chat.title);
+    // console.log("new title", chat.title);
+    setCurrentChatId(chat.chat_id);
+    setSelectedChat(chat.chat_id);
     setShowPopup(true);
     const { top, left, height } = event.currentTarget.getBoundingClientRect();
     setPopupPosition({ top: top + height, left });
@@ -151,6 +172,19 @@ const SideBar = ({
 
   return (
     <section className={`sidebar ${isShowSidebar ? "open" : ""}`}>
+      <div className="sidebar-info-user-1">
+        <img src={kanerikaLogo} alt="User" className="user-image" />
+        <div className="archive-button-container">
+          <img
+            src={archiveIcon}
+            alt="archive"
+            className="archive-icon"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          />
+          {isHovered && <div className="popup">Archive Chats</div>}
+        </div>
+      </div>
       <div className="sidebar-header" onClick={createNewChat} role="button">
         <BiPlus size={20} />
         <button>New Chat</button>
@@ -161,7 +195,7 @@ const SideBar = ({
             <p>Ongoing</p>
             <ul>
               {uniqueTitles.map((chat, idx) => (
-                <li key={idx} className="chat-item">
+                <li key={idx} className="chat-item-ongoing">
                   {isRenaming && selectedChat === chat.chat_id ? (
                     <input
                       type="text"
@@ -184,11 +218,11 @@ const SideBar = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleMenuClick(chat.chat_id, e);
+                          handleMenuClick(chat, e);
                         }}
                         className="menu-button"
                       >
-                        <BsThreeDots size={20} />
+                        <BsThreeDots className="white-icon" size={20} />
                       </button>
                     </>
                   )}
@@ -246,7 +280,7 @@ const SideBar = ({
             <ul>
               {localUniqueTitles.map((chat, idx) => (
                 <li key={idx} className="chat-item">
-                  {isRenaming && selectedChat === chat.title ? (
+                  {isRenaming && selectedChat === chat.chat_id ? (
                     <input
                       type="text"
                       value={newTitle}
@@ -268,7 +302,7 @@ const SideBar = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent triggering the parent onClick
-                          handleMenuClick(chat.title, e);
+                          handleMenuClick(chat, e);
                         }}
                         className="menu-button"
                       >
@@ -290,10 +324,6 @@ const SideBar = ({
           <FaTrash size={20} />
           <span>Delete Conversations</span>
         </div>
-        <div className="sidebar-info-user">
-          <BiSolidUserCircle size={20} />
-          <p>User</p>
-        </div>
       </div>
 
       {showConfirmation && (
@@ -306,7 +336,17 @@ const SideBar = ({
           />
         </>
       )}
-
+      {/* Confirmation for deleting a single chat */}
+      {showDeleteConfirmation && (
+        <>
+          <div className="confirmation-overlay" />
+          <ConfirmationCard
+            message="Do you really want to delete this chat? This process cannot be undone."
+            onConfirm={handleDeleteConfirmed}
+            onCancel={handleDeleteCancel}
+          />
+        </>
+      )}
       {showPopup && (
         <div
           className="popup-menu"
@@ -317,10 +357,9 @@ const SideBar = ({
           }}
         >
           <ul>
-            <li onClick={() => deleteChat(selectedChat)}>Delete</li>
+            <li onClick={() => handleDeleteChatClick(selectedChat)}>Delete</li>
             <li
               onClick={() => {
-                setNewTitle(selectedChat); // Set the new title to current title
                 setIsRenaming(true); // Set renaming state
                 setShowPopup(false); // Close popup
               }}

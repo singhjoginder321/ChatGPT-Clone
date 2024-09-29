@@ -42,9 +42,8 @@ export const deleteAllChats = async () => {
 //function to delete chat by title
 export const deleteChatsByChatId = async (chat_id) => {
   try {
-    await axios.delete(`${API_BASE_URL}/deleteChatsByChatId`, {
-      chat_id,
-    });
+    console.log("chat_id", chat_id);
+    await axios.delete(`${API_BASE_URL}/deleteChatsByChatId/${chat_id}`);
     return true; // Return true if the delete was successful
   } catch (error) {
     console.error("Error deleting chat:", error);

@@ -33,7 +33,7 @@ exports.handleChatCompletion = async (req, res) => {
 
     // Create assistant's response (your logic here)
     const assistantContent =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip."; // Example response
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip. "; // Example response
 
     // Save assistant message
     await db.query(
@@ -147,7 +147,9 @@ exports.deleteAllChats = async (req, res) => {
 
 // Delete chats by title
 exports.deleteChatsByChatId = async (req, res) => {
-  const { chat_id } = req.body; // Expecting chat_id in the request body
+  //const { chat_id } = req.body; // Expecting chat_id in the request body
+  const { chat_id } = req.params;
+  console.log("chat_id", chat_id);
 
   if (!chat_id) {
     return res.status(400).json({ error: "chat_id is required." });
@@ -167,7 +169,7 @@ exports.deleteChatsByChatId = async (req, res) => {
     }
 
     // Delete chats associated with the given chat_id
-    const result = await db.query("DELETE FROM titles WHERE title_id = $1", [
+    const result = await db.query("DELETE FROM titles WHERE chat_id = $1", [
       chat_id,
     ]);
 

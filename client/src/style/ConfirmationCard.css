@@ -30,7 +30,12 @@
 }
 
 .clear-button {
-  background-color: red; /* Red background */
+  background: linear-gradient(
+    90deg,
+    rgb(34, 50, 197) 0%,
+    rgb(255, 0, 123) 0%,
+    rgb(75, 27, 163) 65%
+  );
   color: white; /* White text */
   border: none;
   padding: 10px 15px;
