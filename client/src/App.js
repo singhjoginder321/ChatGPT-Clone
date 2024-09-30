@@ -7,9 +7,12 @@ import {
 } from "react";
 import { MdOutlineArrowLeft, MdOutlineArrowRight } from "react-icons/md";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid"; // Import uuid
 import "./App.css";
 import Chat from "./components/Chat";
+import SharedChat from "./components/SharedChat";
 import ShimmerChat from "./components/Shimmer"; // Import Shimmer
 import SideBar from "./components/SideBar";
 import { fetchAllChatTitles, fetchChatsByChatId } from "./services/apiService";
@@ -68,6 +71,7 @@ function App() {
       role: "user",
       content: text,
     };
+    setUniqueTitles([{ chat_id: newChatId, title: currentTitle || text }]);
 
     try {
       const response = await fetch("http://localhost:8000/api/completions", {
@@ -89,7 +93,6 @@ function App() {
         setErrorText(data.error.message);
         setText("");
       } else {
-        setUniqueTitles([{ chat_id: newChatId, title: text }]);
         setErrorText("");
         setMessage(data.choices[0].message);
 
@@ -191,6 +194,7 @@ function App() {
 
   return (
     <Router>
+      <ToastContainer />
       <Routes>
         <Route
           path="/"
@@ -241,6 +245,7 @@ function App() {
         />
         <Route path="/shimmer" element={<ShimmerChat />} />{" "}
         {/* Shimmer route */}
+        <Route path="/fetch-chat" element={<SharedChat />} />
       </Routes>
     </Router>
   );

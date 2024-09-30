@@ -67,6 +67,8 @@ exports.getAllChats = async (req, res) => {
           titles.title AS title 
       FROM 
           titles 
+      WHERE 
+          is_archived = FALSE  -- Only select unarchived chats
       ORDER BY 
           titles.created_at ASC
     `);
@@ -225,5 +227,138 @@ exports.renameChatTitle = async (req, res) => {
   } catch (error) {
     console.error("Error renaming chat title:", error);
     res.status(500).json({ error: "Failed to rename chat title." });
+  }
+};
+
+//return Archived chats
+exports.getArchivedChats = async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT 
+          titles.chat_id AS chat_id,
+          titles.title AS title 
+      FROM 
+          titles 
+      WHERE 
+          is_archived = TRUE  -- Only select archived chats
+      ORDER BY 
+          titles.created_at ASC
+    `);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "No archived titles found." });
+    }
+
+    // Map the results to include only chat_id and title
+    const formattedTitles = result.rows.map((title) => ({
+      chat_id: title.chat_id,
+      title: title.title,
+    }));
+
+    res.json(formattedTitles);
+  } catch (error) {
+    console.error("Error retrieving archived titles:", error);
+    res.status(500).json({ error: "Failed to retrieve archived titles." });
+  }
+};
+
+//mark chat as archived
+// Archive a title
+exports.archiveTitle = async (req, res) => {
+  const { chat_id } = req.body; // Expecting chat_id in the request body
+
+  if (!chat_id) {
+    return res.status(400).json({ error: "chat_id is required." });
+  }
+
+  try {
+    const result = await db.query(
+      "UPDATE titles SET is_archived = TRUE WHERE chat_id = $1 RETURNING *",
+      [chat_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Chat not found." });
+    }
+
+    res.json({ message: "Title archived successfully.", chat: result.rows[0] });
+  } catch (error) {
+    console.error("Error archiving title:", error);
+    res.status(500).json({ error: "Failed to archive title." });
+  }
+};
+
+//unarchive chat
+// Unarchive a title
+exports.unarchiveTitle = async (req, res) => {
+  const { chat_id } = req.body; // Expecting chat_id in the request body
+
+  if (!chat_id) {
+    return res.status(400).json({ error: "chat_id is required." });
+  }
+
+  try {
+    const result = await db.query(
+      "UPDATE titles SET is_archived = FALSE WHERE chat_id = $1 RETURNING *",
+      [chat_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Chat not found." });
+    }
+
+    res.json({
+      message: "Title unarchived successfully.",
+      chat: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error unarchiving title:", error);
+    res.status(500).json({ error: "Failed to unarchive title." });
+  }
+};
+
+// Fetch chat by chat_id from query parameters
+exports.fetchShareChatById = async (req, res) => {
+  const { chat_id } = req.query; // Get chat_id from query parameters
+
+  if (!chat_id) {
+    return res.status(400).json({ error: "chat_id is required." });
+  }
+
+  try {
+    // Fetch chats by chat_id
+    const chatsResult = await db.query(
+      `
+      SELECT 
+          chats.id, 
+          titles.title AS title, 
+          chats.role, 
+          chats.content, 
+          chats.created_at 
+      FROM 
+          chats 
+      JOIN 
+          titles 
+      ON 
+          chats.title_id = titles.chat_id 
+      WHERE 
+          titles.chat_id = $1 
+      ORDER BY 
+          chats.created_at ASC
+      `,
+      [chat_id]
+    );
+
+    // If no chats are found
+    if (chatsResult.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No chats found for this chat_id." });
+    }
+
+    res.json(chatsResult.rows);
+  } catch (error) {
+    console.error("Error retrieving chats:", error);
+    res.status(500).json({ error: "Failed to retrieve chats." });
   }
 };

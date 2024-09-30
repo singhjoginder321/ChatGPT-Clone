@@ -85,6 +85,7 @@
   );
   margin-bottom: 0.5rem; /* Space between chat items */
   border-radius: 0.3rem;
+  cursor: pointer;
   color: white; /* Set text color to white */
 }
 
@@ -162,7 +163,7 @@
   padding: 0.5rem;
 }
 
-.sidebar li:hover,
+.sidebar .chat-item:hover,
 .sidebar-info-upgrade:hover,
 .sidebar-info-user:hover {
   background-color: #f0f0f0;

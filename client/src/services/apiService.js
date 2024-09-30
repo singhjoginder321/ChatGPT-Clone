@@ -59,3 +59,35 @@ export const renameChatTitle = async (chat_id, newTitle) => {
   });
   return response.data;
 };
+
+// Function to fetch all archived chats
+export const fetchArchivedChats = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/archived-chats`);
+    return response.data; // Assuming this returns an array of archived chats
+  } catch (error) {
+    console.error("Error fetching archived chat:", error);
+    throw error; // Rethrow the error for handling in the caller
+  }
+};
+
+export const unarchiveChat = async (chatId) => {
+  try {
+    await axios.post(`${API_BASE_URL}/unarchive-title`, { chat_id: chatId });
+    return true; // Return true if the unarchive was successful
+  } catch (error) {
+    console.error("Error unarchiving chat:", error);
+    throw error; // Rethrow the error for handling in the caller
+  }
+};
+
+// Function to archive a chat
+export const archiveChat = async (chatId) => {
+  try {
+    await axios.post(`${API_BASE_URL}/archive-title`, { chat_id: chatId });
+    return true; // Return true if the archive was successful
+  } catch (error) {
+    console.error("Error archiving chat:", error);
+    throw error; // Rethrow the error for handling in the caller
+  }
+};

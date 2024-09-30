@@ -1,0 +1,72 @@
+/* ShareCard.css */
+.share-card-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Translucent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top of other elements */
+}
+
+.share-card {
+  background: white;
+  padding: 30px; /* Increased padding for better spacing */
+  border-radius: 12px; /* Slightly rounder corners */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Deeper shadow for depth */
+  text-align: center;
+  max-width: 400px; /* Limit width for better visibility */
+  width: 90%; /* Responsive width */
+}
+
+.share-card h2 {
+  margin-bottom: 20px; /* Space below the title */
+  font-size: 24px; /* Font size for the title */
+  color: #333; /* Dark color for better readability */
+}
+
+.share-card p {
+  margin: 10px 0 20px; /* Space around the paragraph */
+  font-size: 16px; /* Font size for the link */
+  color: #555; /* Slightly lighter color */
+  word-wrap: break-word; /* Break long URLs to next line */
+  background-color: #f7f7f7; /* Light background for the link */
+  padding: 10px; /* Padding around the link */
+  border-radius: 4px; /* Rounded corners for the link background */
+  font-family: monospace; /* Monospace font for a code-like appearance */
+  overflow-wrap: break-word; /* Break long words if necessary */
+}
+
+.share-card button {
+  background-color: #007bff; /* Primary button color */
+  color: white;
+  border: none;
+  border-radius: 6px; /* Rounded corners */
+  padding: 12px 20px; /* Increased padding for larger buttons */
+  margin: 5px; /* Space between buttons */
+  cursor: pointer;
+  font-size: 16px; /* Consistent font size */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+}
+
+.share-card button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: scale(1.05); /* Slightly grow on hover */
+}
+
+.share-card button:last-child {
+  background-color: #dc3545; /* Danger color for close button */
+}
+
+.share-card button:last-child:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+/* Optional: Add focus styles for accessibility */
+.share-card button:focus {
+  outline: none; /* Remove default outline */
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Blue outline for focus */
+}

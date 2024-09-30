@@ -5,11 +5,17 @@ import { BsThreeDots } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa6";
 import archiveIcon from "../assets/archive icon.svg";
 import kanerikaLogo from "../assets/logo-kanerika.png";
+import ArchiveCard from "../components/ArchiveCard"; // Import the ArchiveCard
+import ShareCard from "../components/ShareCard";
 import {
+  archiveChat,
   deleteAllChats,
   deleteChatsByChatId,
+  fetchAllChatTitles,
+  fetchArchivedChats,
   fetchChatsByChatId,
   renameChatTitle,
+  unarchiveChat,
 } from "../services/apiService"; // Import the API functions
 import "../style/Sidebar.css";
 import ConfirmationCard from "./ConfirmationCard"; // Import the ConfirmationCard
@@ -39,6 +45,67 @@ const SideBar = ({
   const [isHovered, setIsHovered] = useState(false); //for hover on archive chats button
   const [chatToDelete, setChatToDelete] = useState(null); // Chat ID for deletion
   const popupRef = useRef(null);
+  const [showArchiveCard, setShowArchiveCard] = useState(false); // State for showing the ArchiveCard
+  const [archivedChats, setArchivedChats] = useState([]);
+  const [showShareCard, setShowShareCard] = useState(false);
+  const [shareChatId, setShareChatId] = useState(null);
+
+  const handleArchiveIconClick = async () => {
+    try {
+      const fetchedArchivedChats = await fetchArchivedChats(); // Await the fetch
+
+      if (!fetchedArchivedChats || fetchedArchivedChats.length === 0) {
+        setArchivedChats([]);
+        setShowArchiveCard(true);
+        console.log("No archived chats available.");
+      } else {
+        setArchivedChats(fetchedArchivedChats); // Set fetched chats
+        console.log("Archived Chats:", fetchedArchivedChats);
+      }
+
+      setShowArchiveCard(true); // Show the archive card
+    } catch (error) {
+      console.error("Error fetching archived chats:", error);
+      setShowArchiveCard(true);
+      setArchivedChats([]);
+    }
+  };
+
+  const handleUnarchive = async (chatId) => {
+    try {
+      await unarchiveChat(chatId);
+      setArchivedChats((prev) =>
+        prev.filter((chat) => chat.chat_id !== chatId)
+      );
+      const chats = await fetchAllChatTitles();
+      setLocalChats(chats);
+    } catch (error) {
+      console.error("Error while fetching the Archive chats", error);
+    }
+  };
+
+  // Close the archive card
+  const closeArchiveCard = () => {
+    setShowArchiveCard(false);
+  };
+
+  const handleArchiveChat = async (chatId) => {
+    try {
+      await archiveChat(chatId); // Call the API to archive the chat
+      // const chats = await fetchAllChatTitles();
+      const chatExists = uniqueTitles.some((chat) => chat.chat_id === chatId);
+
+      setUniqueTitles((prev) => prev.filter((chat) => chat.chat_id !== chatId));
+      setLocalChats((prev) => prev.filter((chat) => chat.chat_id !== chatId));
+      if (chatExists) {
+        setPreviousChats([]);
+      }
+      const fetchedArchivedChats = await fetchArchivedChats(); // Fetch updated archived chats
+      setArchivedChats(fetchedArchivedChats);
+    } catch (error) {
+      console.error("Failed to archive chat:", error);
+    }
+  };
 
   const clearConversations = async () => {
     try {
@@ -179,11 +246,19 @@ const SideBar = ({
             src={archiveIcon}
             alt="archive"
             className="archive-icon"
+            onClick={handleArchiveIconClick} // Change this to handle click
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           />
           {isHovered && <div className="popup">Archive Chats</div>}
         </div>
+        {showArchiveCard && (
+          <ArchiveCard
+            archivedChats={archivedChats}
+            onUnarchive={handleUnarchive}
+            onClose={closeArchiveCard}
+          />
+        )}
       </div>
       <div className="sidebar-header" onClick={createNewChat} role="button">
         <BiPlus size={20} />
@@ -347,6 +422,15 @@ const SideBar = ({
           />
         </>
       )}
+      {showShareCard && (
+        <ShareCard
+          chatId={shareChatId}
+          onClose={() => {
+            setShowShareCard(false); // Close ShareCard
+            setShareChatId(null); // Reset chatId
+          }}
+        />
+      )}
       {showPopup && (
         <div
           className="popup-menu"
@@ -366,8 +450,23 @@ const SideBar = ({
             >
               Rename
             </li>
-            <li>Archive</li>
-            <li>Share</li>
+            <li
+              onClick={() => {
+                handleArchiveChat(selectedChat); // Call archive function
+                setShowPopup(false); // Close popup after archiving
+              }}
+            >
+              Archive
+            </li>
+            <li
+              onClick={() => {
+                setShareChatId(selectedChat); // Set chatId for sharing
+                setShowShareCard(true); // Show ShareCard
+                setShowPopup(false); // Close popup
+              }}
+            >
+              Share
+            </li>
           </ul>
         </div>
       )}
